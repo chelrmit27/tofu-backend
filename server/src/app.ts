@@ -12,8 +12,7 @@ const app = express();
 // Custom CORS logic for flexible frontend access
 const allow = (origin?: string) =>
   !origin || origin === 'http://localhost:5173' ||
-  origin === 'https://your-app.vercel.app' ||
-  /\.vercel\.app$/.test(origin || '');
+  origin === 'https://my-todo-tofu.netlify.app';
 
 app.use(
   cors({
