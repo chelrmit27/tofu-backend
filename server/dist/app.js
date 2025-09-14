@@ -11,11 +11,27 @@ const routes_1 = __importDefault(require("./routes"));
 (0, database_1.default)();
 const app = (0, express_1.default)();
 // --- Core Middleware ---
-// Enable Cross-Origin Resource Sharing
+// Custom CORS logic for flexible frontend access
+// Allow from env (comma-separated), with sensible defaults for local/dev deployments
+const allowedOriginsFromEnv = (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+const defaultAllowedOrigins = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'https://my-todo-tofu.netlify.app',
+    'https://my-todo-tofu-deploy.vercel.app',
+];
+const allowedOrigins = new Set([...defaultAllowedOrigins, ...allowedOriginsFromEnv]);
+const allow = (origin) => !origin || allowedOrigins.has(origin);
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:5173',
+    origin: (origin, cb) => cb(null, allow(origin)),
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+app.options('*', (0, cors_1.default)());
 // Parse incoming JSON requests
 app.use(express_1.default.json());
 // Parse URL-encoded data

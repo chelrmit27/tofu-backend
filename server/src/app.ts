@@ -10,9 +10,22 @@ const app = express();
 
 // --- Core Middleware ---
 // Custom CORS logic for flexible frontend access
-const allow = (origin?: string) =>
-  !origin || origin === 'http://localhost:5173' ||
-  origin === 'https://my-todo-tofu.netlify.app';
+// Allow from env (comma-separated), with sensible defaults for local/dev deployments
+const allowedOriginsFromEnv = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+const defaultAllowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://my-todo-tofu.netlify.app',
+  'https://my-todo-tofu-deploy.vercel.app',
+];
+
+const allowedOrigins = new Set<string>([...defaultAllowedOrigins, ...allowedOriginsFromEnv]);
+
+const allow = (origin?: string) => !origin || allowedOrigins.has(origin);
 
 app.use(
   cors({
