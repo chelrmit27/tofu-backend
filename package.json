@@ -13,7 +13,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "backend": "pnpm --filter ./server dev",
-    "backend:prod": "pnpm --filter ./server start"
+    "backend:prod": "pnpm --filter ./server start",
+    "backend:install": "pnpm install --filter ./server"
   },
   "dependencies": {
     "@iconify/react": "^6.0.1",
