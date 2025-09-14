@@ -9,13 +9,25 @@ connectDB();
 const app = express();
 
 // --- Core Middleware ---
-// Enable Cross-Origin Resource Sharing
+// Custom CORS logic for flexible frontend access
+const allow = (origin?: string) =>
+  !origin || origin === 'http://localhost:5173' ||
+  origin === 'https://your-app.vercel.app' ||
+  /\.vercel\.app$/.test(origin || '');
+
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://tofu-backend-3oo1.onrender.com'],
+    origin: (origin, cb) => cb(null, allow(origin)),
     credentials: true,
-  }),
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
 );
+app.options('*', cors());
+
+// If using cookies/sessions behind proxy:
+app.set('trust proxy', 1);
+
 // Parse incoming JSON requests
 app.use(express.json());
 // Parse URL-encoded data
